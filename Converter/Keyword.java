@@ -4,7 +4,10 @@ public enum Keyword {
     DOUBLE("double"),
     STRING("String"),
     RETURN("return"),
+<<<<<<< HEAD
     SYSTEM("System"),
+=======
+>>>>>>> origin/master
     //try, catch, public, private, for, while
     NOTFOUND("");
     

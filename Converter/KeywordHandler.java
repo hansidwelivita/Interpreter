@@ -29,6 +29,12 @@ public class KeywordHandler {
                 break;
             case RETURN:
                 //
+<<<<<<< HEAD
+=======
+                break;
+            case NOTFOUND:
+                System.out.println("No keyword found.");
+>>>>>>> origin/master
                 break;
                 
             case SYSTEM:
