@@ -3,9 +3,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Interpreter {
     private ArrayList<String> fileInput;
     private KeywordHandler keywordHandler;
+    
+    public String activeLine = "";
     
     public static void main(String[] args) {
         new Interpreter();
@@ -13,9 +16,9 @@ public class Interpreter {
     
     public Interpreter() {
         fileInput = new ArrayList<String>();
-        keywordHandler = new KeywordHandler();
+        keywordHandler = new KeywordHandler(this);
         
-        readFile("HelloWorld.java");
+        readFile("HelloWorld.java"); //eventually use JFileChooser or equivalent 
     }
     
     public void readFile(String filename) {
@@ -37,10 +40,17 @@ public class Interpreter {
     
     public void interpret() {
         for(int i = 0; i < fileInput.size(); i++) {
-            System.out.println("Reading in line: " + fileInput.get(i).trim());
-            String[] tokens = fileInput.get(i).trim().split(" ");
+            activeLine = fileInput.get(i).trim();
+            System.out.println("Reading in line: " + activeLine);
+            String[] tokens = activeLine.split(" ");
             System.out.print("\t");
-            keywordHandler.handle(tokens[0]);
+            
+            // This may eventually be a while ! true
+            if(!keywordHandler.handle(tokens[0])) {
+                tokens = activeLine.split("\\.");
+                System.out.print("\t");
+                keywordHandler.handle(tokens[0]);
+            }
         }
     }
 }
