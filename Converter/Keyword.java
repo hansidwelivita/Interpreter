@@ -5,7 +5,8 @@ public enum Keyword {
     STRING("String"),
     RETURN("return"),
     SYSTEM("System"),
-    //try, catch, public, private, for, while
+    ENDCURLY("}"),
+    //try, catch, public, private, for, while, if, else, switch, do
     NOTFOUND("");
     
     private String str;

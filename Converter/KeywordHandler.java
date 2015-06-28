@@ -5,9 +5,12 @@ import java.io.FileWriter;
 public class KeywordHandler {
     private Interpreter interpreter;
     private File activeFile; 
-    
     private String activeLine;
-    
+    private int tabCounter;
+    /*
+     * TODO: figure out a way to increment tabCounter based on start curly brackets { , 2 different cases depending 
+     *     on whether code is written with { on its own line or at the end of a line 
+     */
     public KeywordHandler(Interpreter interpreter) {
         this.interpreter = interpreter;    
     }
@@ -33,6 +36,10 @@ public class KeywordHandler {
             case SYSTEM:
                 System.out.println("Found keyword: System");
                 createSystemCall();
+                break;
+            case ENDCURLY:
+                //System.out.println("Found end curly bracket");
+                tabCounter--; //generally go back a tab when a block of code ends.   
                 break;
             case NOTFOUND:
                 if(checkForConstructor()) {
@@ -78,6 +85,7 @@ public class KeywordHandler {
         } catch(IOException e) {
             e.printStackTrace();
         }
+        tabCounter = 1; //set tab counter to 1 here, anything written to file after this will be tabbed at least once
     }
     
     private void createConstructor() {
@@ -85,11 +93,12 @@ public class KeywordHandler {
         System.out.println("Constructor found.");
         try {
             FileWriter fw = new FileWriter(activeFile, true);
-            fw.write("\tdef __init__(self):\n");
+            fw.write(tabHandler() + "def __init__(self):\n"); //changed to use new tab system
             fw.close();
         } catch(IOException e) {
             e.printStackTrace();
         }
+        tabCounter++;
     }
     
     private void createSystemCall() {
@@ -111,11 +120,34 @@ public class KeywordHandler {
         if(tokens[1].equals("out")) {
             /* PrintStream methods
              * http://docs.oracle.com/javase/7/docs/api/java/io/PrintStream.html
-             * for now we just look at println
-             * 
+             * for now we just look at println 
              * completed:
-             * 
              */
+            
+            if(tokens[2].substring(0,7).equals("println")) { 
+                //tokens[2] is println("Hello World!");, use substring method to isolate println
+                //2nd argument of substring is actually 1 more than the string will return
+                System.out.println("Print new line found");
+                String printedString = tokens[2].substring(8, ( tokens[2].length() - 2 ) ); //this should isolate string being printed.  9 is the index of the first character AFTER the first quotation the 2nd argument should be index of the 
+                                                                                            //second quotation, but the 2nd quotation will not be included in the returned string  
+                try {
+                    FileWriter fw = new FileWriter(activeFile, true);
+                    fw.write(tabHandler()+ "print(" + printedString + ")");
+                    fw.close();
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
+                
+            }
         }
+    }
+    //contain tab escapes in a single string, call this every time we write to the file
+    //this should work for decrementing tabs as well as long as we correctly keep track of tabCount in the functions
+    private String tabHandler() {
+        String tabString = "";
+        for(int i = 0; i < tabCounter; i++) {
+            tabString += "\t";
+        }
+        return tabString;
     }
 }
