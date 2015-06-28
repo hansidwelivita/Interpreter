@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Interpreter {
     private ArrayList<String> fileInput;
     private KeywordHandler keywordHandler;
@@ -15,7 +16,7 @@ public class Interpreter {
         fileInput = new ArrayList<String>();
         keywordHandler = new KeywordHandler();
         
-        readFile("HelloWorld.java");
+        readFile("HelloWorld.java"); //eventually use JFileChooser or equivalent 
     }
     
     public void readFile(String filename) {

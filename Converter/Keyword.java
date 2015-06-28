@@ -1,5 +1,10 @@
 public enum Keyword {
     CLASS("class"),
+    INTEGER("int"),
+    DOUBLE("double"),
+    STRING("String"),
+    RETURN("return"),
+    //try, catch, public, private, for, while
     NOTFOUND("");
     
     private String str;
