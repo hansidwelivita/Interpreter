@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Interpreter {
     private ArrayList<String> fileInput;
-    
+    private KeywordHandler keywordHandler;
     
     public static void main(String[] args) {
         new Interpreter();
@@ -13,7 +13,9 @@ public class Interpreter {
     
     public Interpreter() {
         fileInput = new ArrayList<String>();
-        readFile("Interpreter.java");
+        keywordHandler = new KeywordHandler();
+        
+        readFile("HelloWorld.java");
     }
     
     public void readFile(String filename) {
@@ -35,10 +37,10 @@ public class Interpreter {
     
     public void interpret() {
         for(int i = 0; i < fileInput.size(); i++) {
-            String[] tokens = fileInput.get(i).split(" ");
-            for(int t = 0; t < tokens.length; t++) {
-                System.out.println(tokens[t]);
-            }
+            System.out.println("Reading in line: " + fileInput.get(i).trim());
+            String[] tokens = fileInput.get(i).trim().split(" ");
+            System.out.print("\t");
+            keywordHandler.handle(tokens[0]);
         }
     }
 }
