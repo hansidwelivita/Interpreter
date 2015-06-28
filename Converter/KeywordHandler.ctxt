@@ -1,4 +1,14 @@
 #BlueJ class context
-comment0.params=keyword
-comment0.target=void\ handle(java.lang.String)
-numComments=1
+comment0.params=interpreter
+comment0.target=KeywordHandler(Interpreter)
+comment1.params=keyword
+comment1.target=boolean\ handle(java.lang.String)
+comment2.params=
+comment2.target=boolean\ checkForConstructor()
+comment3.params=
+comment3.target=void\ createClass()
+comment4.params=
+comment4.target=void\ createConstructor()
+comment5.params=
+comment5.target=void\ createSystemCall()
+numComments=6
