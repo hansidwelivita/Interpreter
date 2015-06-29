@@ -1,11 +1,16 @@
 public enum Keyword {
     CLASS("class"),
+    CONSTRUCTOR("CONSTRUCTOR"), // DO NOT CHECK THIS
+    VARIABLE("VARIABLE"), // DO NOT CHECK THIS
+    FUNCTION("FUNCTION"), // DO NOT CHECK THIS
     INTEGER("int"),
     DOUBLE("double"),
     STRING("String"),
     RETURN("return"),
     SYSTEM("System"),
-    ENDCURLY("}"),
+    LINECOMMENT("//"),
+    PUBLICFUNCTION("public"),
+    PRIVATEFUNCTION("private"),
     //try, catch, public, private, for, while, if, else, switch, do
     NOTFOUND("");
     

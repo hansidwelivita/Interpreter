@@ -2,17 +2,30 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileWriter;
 
+import java.util.ArrayList;
+
 public class KeywordHandler {
     private Interpreter interpreter;
     private File activeFile; 
-    private String activeLine;
+    private String activeLine, className;
+    
+    private ArrayList<OutputHandler> output;
+    private ArrayList<String> variables;
+    
+    private int lineCounter;
     public int tabCounter;
+    
+    private boolean hasConstructor = false;
+    
+    
     /*
      * TODO: figure out a way to increment tabCounter based on start curly brackets { , 2 different cases depending 
      *     on whether code is written with { on its own line or at the end of a line 
      */
     public KeywordHandler(Interpreter interpreter) {
         this.interpreter = interpreter;    
+        output = new ArrayList<OutputHandler>();
+        variables = new ArrayList<String>();        
     }
     
     public boolean handle(String keyword) {
@@ -36,9 +49,15 @@ public class KeywordHandler {
                 System.out.println("Found keyword: System");
                 createSystemCall();
                 break;
-            case ENDCURLY:
-                //System.out.println("Found end curly bracket");
-                tabCounter--; //generally go back a tab when a block of code ends.   
+            case LINECOMMENT:
+                System.out.println("Found line comment");
+                writeComment();
+                break;
+            //case PRIVATEFUNCTION:
+                //System.out.println("Private Function");
+            case PUBLICFUNCTION:
+                System.out.println("Public Function");
+                writeFunction();
                 break;
             case NOTFOUND:
                 if(checkForConstructor()) {
@@ -59,8 +78,8 @@ public class KeywordHandler {
         if(tokens.length < 2)
             return false;
         
-        // This does not work for constructors that have params
-        if(tokens[1].charAt(0) == ')')
+        // This needs to be reworked
+        if(tokens[0].equals(className))
             return true;
             
         return false;
@@ -70,31 +89,27 @@ public class KeywordHandler {
         activeLine = interpreter.activeLine;
         String[] tokens = activeLine.split(" ");
         String[] nameTokens = tokens[1].split("\\(");
-        String filename = nameTokens[0].trim();
-        activeFile = new File("python/" + filename + ".py");
-        
-        if(activeFile.exists()) 
-            activeFile.delete();
-            
-        try {
-            activeFile.createNewFile();
-            FileWriter fw = new FileWriter(activeFile);
-            fw.write("class " + filename + "():\n");
-            fw.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        className = nameTokens[0].trim();
+        output.add(new OutputHandler(tabCounter, "class " + className + "():\n", Keyword.CLASS));
+    }
+    
+    private void writeFunction() {
+        //need to be able to recognize function params
+        activeLine = interpreter.activeLine;
+        String[] tokens = activeLine.split(" ");
+        System.out.println(tokens[1]);
+        System.out.println(tokens[2]);
+        output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + ":\n", Keyword.FUNCTION));
     }
     
     private void createConstructor() {
-        // We need to add a "tab" counter so we know how far to indent the next line
         System.out.println("Constructor found.");
-        try {
-            FileWriter fw = new FileWriter(activeFile, true);
-            fw.write(tabHandler() + "def __init__(self):\n"); //changed to use new tab system
-            fw.close();
-        } catch(IOException e) {
-            e.printStackTrace();
+        hasConstructor = true;
+        output.add(new OutputHandler(tabCounter, tabHandler() + "def __init__(self):\n", Keyword.CONSTRUCTOR));
+        for(String var : variables) {
+            tabCounter += 1;
+            output.add(new OutputHandler(tabCounter, tabHandler() + var, Keyword.VARIABLE));
+            tabCounter -= 1;
         }
     }
     
@@ -125,16 +140,11 @@ public class KeywordHandler {
                 //tokens[2] is println("Hello World!");, use substring method to isolate println
                 //2nd argument of substring is actually 1 more than the string will return
                 System.out.println("Print new line found");
-                String printedString = tokens[2].substring(8, ( tokens[2].length() - 2 ) ); //this should isolate string being printed.  9 is the index of the first character AFTER the first quotation the 2nd argument should be index of the 
+                String printedString = tokens[2].substring(8, ( tokens[2].length() - 2 ) ); //this should isolate string being printed.  8 is the index of the first character AFTER the first quotation the 2nd argument should be index of the 
                                                                                             //second quotation, but the 2nd quotation will not be included in the returned string  
-                try {
-                    FileWriter fw = new FileWriter(activeFile, true);
-                    fw.write(tabHandler() + "print(" + printedString + ")\n");
-                    fw.close();
-                } catch(IOException e) {
-                    e.printStackTrace();
-                }
+                output.add(new OutputHandler(tabCounter, tabHandler() + "print(" + printedString + ")\n", Keyword.STRING));
             }
+            //eventually add the other print calls: printf, print
         }
     }
     
@@ -142,22 +152,32 @@ public class KeywordHandler {
         activeLine = interpreter.activeLine;
         activeLine = activeLine.substring(activeLine.indexOf(" ")).replaceAll(" ", "");
         String[] tokens = activeLine.split(" |=|;");
+        String variableText = "self." + tokens[0];
         
-        try {
-            FileWriter fw = new FileWriter(activeFile, true);
-            String output = tokens[0];
-            
-            if(tokens.length >= 2)
-                output = output.concat(" = " + tokens[1]);
-            else
-                output = output.concat(" = 0");
-            fw.write(tabHandler() + output + "\n");
-            fw.close();
-        } catch(IOException e) {
-            e.printStackTrace();
+        if(tokens.length >= 2)
+            variableText = variableText.concat(" = " + tokens[1] + "\n");
+        else
+            variableText = variableText.concat(" = 0\n");
+        
+        if(hasConstructor) {
+            for(int i = output.size() - 1; i > 0; i--) {
+                if(output.get(i).type == Keyword.CONSTRUCTOR) {
+                    int tempTabs = tabCounter;
+                    tabCounter = output.get(i).tabCount + 1;
+                    output.add(i+1, new OutputHandler(tabCounter, tabHandler() + variableText, Keyword.VARIABLE));
+                    tabCounter = tempTabs;
+                }
+            }
+        } else {
+            variables.add(variableText);
         }
     }
     
+    private void writeComment() {
+        activeLine = interpreter.activeLine.replaceAll("//","");
+        output.add(new OutputHandler(tabCounter, tabHandler() + "#" + activeLine + "\n", Keyword.LINECOMMENT));
+    }
+
     //contain tab escapes in a single string, call this every time we write to the file
     //this should work for decrementing tabs as well as long as we correctly keep track of tabCount in the functions
     private String tabHandler() {
@@ -166,5 +186,35 @@ public class KeywordHandler {
             tabString += "\t";
         }
         return tabString;
+    }
+    
+    
+    public void writeFile() {
+        activeFile = new File("python/" + className + ".py");
+        
+        if(activeFile.exists()) 
+            activeFile.delete();
+            
+        try {
+            activeFile.createNewFile();
+            FileWriter fw = new FileWriter(activeFile);
+            for(OutputHandler out : output)
+                fw.write(out.output);
+            fw.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private class OutputHandler {
+        public int tabCount;
+        public String output;
+        public Keyword type;
+        
+        public OutputHandler(int tabCount, String output, Keyword type) {
+            this.tabCount = tabCount;
+            this.output = output;
+            this.type = type;
+        }
     }
 }
