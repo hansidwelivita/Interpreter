@@ -51,6 +51,11 @@ public class Interpreter {
                 System.out.print("\t");
                 keywordHandler.handle(tokens[0]);
             }
+            
+            if(activeLine.contains("{"))
+                keywordHandler.tabCounter += 1;
+            if(activeLine.contains("}"))
+                keywordHandler.tabCounter -= 1;
         }
     }
 }
