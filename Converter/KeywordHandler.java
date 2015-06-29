@@ -6,7 +6,7 @@ public class KeywordHandler {
     private Interpreter interpreter;
     private File activeFile; 
     private String activeLine;
-    private int tabCounter;
+    public int tabCounter;
     /*
      * TODO: figure out a way to increment tabCounter based on start curly brackets { , 2 different cases depending 
      *     on whether code is written with { on its own line or at the end of a line 
@@ -21,12 +21,11 @@ public class KeywordHandler {
                 System.out.println("Found keyword: class");
                 createClass();
                 break;
-            case INTEGER:
-                //
-                break;
             case DOUBLE:
-                //
-                break;       
+            case INTEGER:
+                System.out.println("Found keyword: int");
+                createVariable();
+                break;      
             case STRING:
                 //
                 break;
@@ -85,7 +84,6 @@ public class KeywordHandler {
         } catch(IOException e) {
             e.printStackTrace();
         }
-        tabCounter = 1; //set tab counter to 1 here, anything written to file after this will be tabbed at least once
     }
     
     private void createConstructor() {
@@ -98,7 +96,6 @@ public class KeywordHandler {
         } catch(IOException e) {
             e.printStackTrace();
         }
-        tabCounter++;
     }
     
     private void createSystemCall() {
@@ -132,15 +129,35 @@ public class KeywordHandler {
                                                                                             //second quotation, but the 2nd quotation will not be included in the returned string  
                 try {
                     FileWriter fw = new FileWriter(activeFile, true);
-                    fw.write(tabHandler()+ "print(" + printedString + ")");
+                    fw.write(tabHandler() + "print(" + printedString + ")\n");
                     fw.close();
                 } catch(IOException e) {
                     e.printStackTrace();
                 }
-                
             }
         }
     }
+    
+    private void createVariable() {
+        activeLine = interpreter.activeLine;
+        activeLine = activeLine.substring(activeLine.indexOf(" ")).replaceAll(" ", "");
+        String[] tokens = activeLine.split(" |=|;");
+        
+        try {
+            FileWriter fw = new FileWriter(activeFile, true);
+            String output = tokens[0];
+            
+            if(tokens.length >= 2)
+                output = output.concat(" = " + tokens[1]);
+            else
+                output = output.concat(" = 0");
+            fw.write(tabHandler() + output + "\n");
+            fw.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     //contain tab escapes in a single string, call this every time we write to the file
     //this should work for decrementing tabs as well as long as we correctly keep track of tabCount in the functions
     private String tabHandler() {
