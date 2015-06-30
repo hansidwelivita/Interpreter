@@ -41,16 +41,25 @@ public class Interpreter {
     public void interpret() {
         for(int i = 0; i < fileInput.size(); i++) {
             activeLine = fileInput.get(i).trim();
-            System.out.println("Reading in line: " + activeLine);
+            System.out.println("Reading in line: " + activeLine + " at tab " + keywordHandler.tabCounter);
             String[] tokens = activeLine.split(" ");
             System.out.print("\t");
             
+            if( (tokens[0].length() >= 2) && tokens[0].substring(0,2).equals("//"))
+                keywordHandler.handle("//");
             // This may eventually be a while ! true
-            if(!keywordHandler.handle(tokens[0])) {
+            else if(!keywordHandler.handle(tokens[0])) {
                 tokens = activeLine.split("\\.");
                 System.out.print("\t");
                 keywordHandler.handle(tokens[0]);
             }
+            
+            if(activeLine.contains("{"))
+                keywordHandler.tabCounter += 1;
+            if(activeLine.contains("}"))
+                keywordHandler.tabCounter -= 1;
         }
+        
+        keywordHandler.writeFile();
     }
 }
