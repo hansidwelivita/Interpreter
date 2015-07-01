@@ -95,11 +95,34 @@ public class KeywordHandler {
     
     private void writeFunction() {
         //need to be able to recognize function params
+        String funcName;
+        String allParams = "";
         activeLine = interpreter.activeLine;
-        String[] tokens = activeLine.split(" ");
-        System.out.println(tokens[1]);
-        System.out.println(tokens[2]);
-        output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + ":\n", Keyword.FUNCTION));
+        String firstParams = activeLine.substring(activeLine.indexOf("(")+1 , activeLine.lastIndexOf(")")); //get inside of parenthesis
+        String[] secondParams = firstParams.split("[ (,]+");
+        String[] variableNames = new String[secondParams.length/2];
+        int variableCounter = 0;
+        if(firstParams.equals("")) {
+            System.out.println("Empty");
+            String[] tokens = activeLine.split("[ {]");
+            output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + ":\n", Keyword.FUNCTION));
+        }
+        else {
+            for(int i = 1; i < secondParams.length; i+=2) {
+                variableNames[variableCounter] = secondParams[i]; 
+                variableCounter++;
+            
+            }
+            for(int i = 0; i < variableNames.length; i++) {
+                if(i == variableNames.length)
+                    allParams = allParams + variableNames[i];
+                else
+                    allParams = allParams + variableNames[i] + ",";
+            }
+            String[] tokens = activeLine.split("[ (]");
+           
+            output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + "(" + allParams + " ):\n" , Keyword.FUNCTION));
+        }
     }
     
     private void createConstructor() {

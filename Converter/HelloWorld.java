@@ -11,9 +11,12 @@ class HelloWorld {
         System.out.println("Constructor with input.");
     }
     
-    public void testFunction() {
+    public void testFunction(int test, String testString) {
         System.out.println("Testing");
         //function test
+    }
+    
+    public void testIndexFunction(){
     }
     
     int z = 3;
