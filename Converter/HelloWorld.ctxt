@@ -3,6 +3,7 @@ comment0.params=
 comment0.target=HelloWorld()
 comment1.params=i
 comment1.target=HelloWorld(int)
+<<<<<<< HEAD
 comment2.params=l\ d
 comment2.target=HelloWorld(int,\ double)
 comment3.params=test\ d
@@ -14,3 +15,10 @@ comment5.target=void\ testFunction(int,\ java.lang.String)
 comment6.params=
 comment6.target=void\ testIndexFunction()
 numComments=7
+=======
+comment2.params=test\ testString
+comment2.target=void\ testFunction(int,\ java.lang.String)
+comment3.params=
+comment3.target=java.lang.String\ testReturnFunction()
+numComments=4
+>>>>>>> origin/master

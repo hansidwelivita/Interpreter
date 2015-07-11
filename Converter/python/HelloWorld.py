@@ -29,4 +29,8 @@ class HelloWorld():
 >>>>>>> origin/master
 		#function test
 	def testReturnFunction():
+<<<<<<< HEAD
 		return testString
+=======
+		return testString
+>>>>>>> origin/master
