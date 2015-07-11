@@ -6,6 +6,7 @@ comment1.params=keyword
 comment1.target=boolean\ handle(java.lang.String)
 comment10.params=
 <<<<<<< HEAD
+<<<<<<< HEAD
 comment10.target=void\ writeComment()
 comment11.params=
 comment11.target=java.lang.String\ tabHandler()
@@ -14,6 +15,8 @@ comment12.target=void\ writeFile()
 comment2.params=oneHandle
 comment2.target=void\ add(KeywordHandler.OutputHandler)
 =======
+=======
+>>>>>>> origin/master
 comment10.target=java.lang.String\ tabHandler()
 comment11.params=
 comment11.target=void\ writeFile()
@@ -25,6 +28,7 @@ comment3.target=boolean\ checkForConstructor()
 comment4.params=
 comment4.target=void\ createClass()
 comment5.params=
+<<<<<<< HEAD
 <<<<<<< HEAD
 comment5.target=void\ writeFunction()
 comment6.params=
@@ -40,6 +44,11 @@ numComments=13
 comment5.target=void\ writeReturn()
 comment6.params=
 comment6.target=void\ createConstructor()
+=======
+comment5.target=void\ writeReturn()
+comment6.params=
+comment6.target=void\ createConstructor()
+>>>>>>> origin/master
 comment7.params=
 comment7.target=void\ createSystemCall()
 comment8.params=
@@ -47,4 +56,7 @@ comment8.target=void\ createVariable()
 comment9.params=
 comment9.target=void\ writeComment()
 numComments=12
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master

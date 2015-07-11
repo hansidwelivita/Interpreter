@@ -130,9 +130,12 @@ public class KeywordHandler {
     private void writeFunction() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         inConstructor = false;
         
         //need to be able to recognize function params
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 =======

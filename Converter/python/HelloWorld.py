@@ -30,7 +30,11 @@ class HelloWorld():
 		#function test
 	def testReturnFunction():
 <<<<<<< HEAD
+<<<<<<< HEAD
 		return testString
+=======
+		return testString
+>>>>>>> origin/master
 =======
 		return testString
 >>>>>>> origin/master
