@@ -12,6 +12,7 @@ public enum Keyword {
     LINECOMMENT("//"),
     PUBLICFUNCTION("public"),
     PRIVATEFUNCTION("private"),
+    ARITHMETIC("arithmetic"),
     //try, catch, public, private, for, while, if, else, switch, do
     NOTFOUND("");
     

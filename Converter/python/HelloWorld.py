@@ -3,6 +3,7 @@ class HelloWorld():
 		self.i = 0
 		self.x = 0
 		self.z = 3
+<<<<<<< HEAD
 
 		if(i is None and l is None and d is None and test is None):
 			print 'Hello World!' 
@@ -19,5 +20,13 @@ class HelloWorld():
 			instance_variable = 0
 	def testFunction(test,testString, ):
 		print 'Testing' 
+=======
+		self.i = 0
+		self.x = 0
+		print("Constructor with inp)
+	def testFunction(test,testString ):
+		print("Testing")
+>>>>>>> origin/master
 		#function test
-	def testIndexFunction():
+	def testReturnFunction():
+		return testString
