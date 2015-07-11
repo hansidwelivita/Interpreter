@@ -16,7 +16,9 @@ class HelloWorld {
         //function test
     }
     
-    public void testIndexFunction(){
+    public String testReturnFunction(){
+        String returnString = "";
+        return returnString;
     }
     
     int z = 3;

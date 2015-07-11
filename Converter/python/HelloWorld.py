@@ -10,7 +10,8 @@ class HelloWorld():
 		self.i = 0
 		self.x = 0
 		print("Constructor with inp)
-	def testFunction(test,testString, ):
+	def testFunction(test,testString ):
 		print("Testing")
 		#function test
-	def testIndexFunction():
+	def testReturnFunction():
+		return testString
