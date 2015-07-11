@@ -3,6 +3,7 @@ public enum Keyword {
     CONSTRUCTOR("CONSTRUCTOR"), // DO NOT CHECK THIS
     VARIABLE("VARIABLE"), // DO NOT CHECK THIS
     FUNCTION("FUNCTION"), // DO NOT CHECK THIS
+    IF("if"),
     INTEGER("int"),
     DOUBLE("double"),
     STRING("String"),
