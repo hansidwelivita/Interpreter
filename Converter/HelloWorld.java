@@ -30,9 +30,7 @@ class HelloWorld {
         //function test
     }
     
-    public String testReturnFunction(){
-        String returnString = "";
-        return returnString;
+    public void testIndexFunction(){
     }
     
     int z = 3;

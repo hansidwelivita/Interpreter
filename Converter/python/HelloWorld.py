@@ -26,15 +26,7 @@ class HelloWorld():
 		print("Constructor with inp)
 	def testFunction(test,testString ):
 		print("Testing")
->>>>>>> origin/master
+>>>>>>> a0a897a71874948b14893b029e377d3916f928cb
 		#function test
 	def testReturnFunction():
-<<<<<<< HEAD
-<<<<<<< HEAD
 		return testString
-=======
-		return testString
->>>>>>> origin/master
-=======
-		return testString
->>>>>>> origin/master

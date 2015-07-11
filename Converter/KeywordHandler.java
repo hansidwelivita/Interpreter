@@ -129,17 +129,11 @@ public class KeywordHandler {
     
     private void writeFunction() {
 <<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         inConstructor = false;
         
         //need to be able to recognize function params
 =======
->>>>>>> origin/master
-=======
->>>>>>> origin/master
-=======
->>>>>>> origin/master
+>>>>>>> a0a897a71874948b14893b029e377d3916f928cb
         String funcName;
         String allNames = "";
         activeLine = interpreter.activeLine;
