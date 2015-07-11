@@ -20,6 +20,11 @@ class HelloWorld {
         int instance_variable = 0;
     }
     
+    HelloWorld(int test, float d) {
+        System.out.println("Constructor with same name input different type.");
+        int instance_variable = 0;
+    }
+    
     public void testFunction(int test, String testString) {
         System.out.println("Testing");
         //function test

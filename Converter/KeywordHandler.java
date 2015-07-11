@@ -6,11 +6,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class KeywordHandler {
+    private final boolean DEBUG = true;
+
+
     private Interpreter interpreter;
     private File activeFile; 
     private String activeLine, className;
     
     private ArrayList<OutputHandler> output;
+    
+    
+    /*
+     * Constructor stuff 
+     */
+    private ArrayList<ConstructorHandler> constructors; // Holds activeConstructors as they are being processed
+    private ConstructorHandler activeConstructor; // The current constructor that the interpreter is on.
+    private boolean inConstructor = false;  // This lets the file writer know to add to the activeConstructor
+    // ----- END
+    
+    
     private ArrayList<String> variables;
     
     private int lineCounter, classCounter;
@@ -25,8 +39,11 @@ public class KeywordHandler {
      *     on whether code is written with { on its own line or at the end of a line 
      */
     public KeywordHandler(Interpreter interpreter) {
-        this.interpreter = interpreter;    
+        this.interpreter = interpreter;   
+        
         output = new ArrayList<OutputHandler>();
+        constructors = new ArrayList<ConstructorHandler>();
+        
         variables = new ArrayList<String>();   
         constructorVariables = new ArrayList<String>();
     }
@@ -74,6 +91,15 @@ public class KeywordHandler {
         return true;
     }
     
+    private void add(OutputHandler oneHandle) {
+        if(inConstructor) {
+            tabCounter++;
+            activeConstructor.outputs.add(new OutputHandler(tabCounter, "\t" + oneHandle.output, oneHandle.type));
+            tabCounter--;
+        }else
+            output.add(oneHandle);
+    }
+    
     private boolean checkForConstructor() {
         activeLine = interpreter.activeLine;
         String[] tokens = activeLine.trim().split("\\(");
@@ -94,10 +120,12 @@ public class KeywordHandler {
         String[] nameTokens = tokens[1].split("\\(");
         className = nameTokens[0].trim();
         classCounter = tabCounter + 1;
-        output.add(new OutputHandler(tabCounter, "class " + className + "():\n", Keyword.CLASS));
+        //output.add(new OutputHandler(tabCounter, "class " + className + "():\n", Keyword.CLASS));
     }
     
     private void writeFunction() {
+        inConstructor = false;
+        
         //need to be able to recognize function params
         String funcName;
         String allParams = "";
@@ -130,74 +158,72 @@ public class KeywordHandler {
     }
     
     private void createConstructor() {
-        System.out.println("Constructor found.");
-        activeLine = interpreter.activeLine;
-        activeLine = activeLine.replace(className, "");
-        activeLine = activeLine.substring(activeLine.indexOf("(") + 1, activeLine.lastIndexOf(")"));
-        activeLine = activeLine.replaceAll(",", " ");
+        if(DEBUG)
+            System.out.println("Constructor found.");
+        
+        inConstructor = true;
+        activeConstructor = new ConstructorHandler();
+        
+        activeLine = interpreter.activeLine.replace(className, "");
+        activeLine = activeLine.substring(activeLine.indexOf("(") + 1, activeLine.lastIndexOf(")")).replaceAll(",", " ");
         String[] tokens = activeLine.split("\\s+");
-        
-        ConstructorHandler constructorHandler = new ConstructorHandler();
-        for(int i = 0; i < tokens.length; i++)
+
+        for(int i = 0; i < tokens.length; i++) {
             if(i%2 == 1)
-                constructorHandler.activeVariables.add(tokens[i]);
+                activeConstructor.activeVariables.add(new Variable(tokens[i], tokens[i-1]));
+            if(i%2 == 1 && !constructorVariables.contains(tokens[i]))
+                constructorVariables.add(tokens[i]);
+        }
         
-        /*if(hasConstructor) {
-            ArrayList<String> currentConstructorVariables = new ArrayList<String>();
-            for(int i = output.size() - 1; i > 0; i--) {
-                if(output.get(i).type == Keyword.CONSTRUCTOR) {
-                    String holder = output.get(i).output;
-                    String beginning = holder.substring(0, holder.lastIndexOf(")"));
-                 
-                    for(int c = 0; c < tokens.length; c++) {
-                        if(c%2 == 1 && !constructorVariables.contains(tokens[c])) {
-                            constructorVariables.add(tokens[c]);
-                            beginning += ", " + tokens[c] + "=None";
-                        }
-                        if(c%2 == 1)
-                            currentConstructorVariables.add(tokens[c]);
-                    }
-                    beginning += "):\n";
-            
-                    output.get(i).output = beginning;
-                }
-            }
-            
-            String out = "if(";
-            for(int i = 0; i < constructorVariables.size(); i++) {
-                if(i < constructorVariables.size() - 1) {
-                    if(currentConstructorVariables.contains(constructorVariables.get(i)))
-                        out += constructorVariables.get(i) + " is not None and ";
-                    else
-                        out += constructorVariables.get(i) + " is None and ";
-                } else
-                    if(currentConstructorVariables.contains(constructorVariables.get(i)))
-                        out += constructorVariables.get(i) + " is not None):\n";
-                    else
-                        out += constructorVariables.get(i) + " is None):\n";
-            }
-            
-            output.add(new OutputHandler(tabCounter, out, Keyword.IF));
-        } else {
-            hasConstructor = true;
-        
-            String line = "def __init__(self";            
-            for(int i = 0; i < tokens.length; i++) {
-                if(i%2 == 1 && !constructorVariables.contains(tokens[i])) {
-                    constructorVariables.add(tokens[i]);
-                    line += ", " + tokens[i] + "=None";
-                }
-            }
-            line += "):\n";
-            
-            output.add(new OutputHandler(tabCounter, tabHandler() + line, Keyword.CONSTRUCTOR));
-            for(String var : variables) {
-                tabCounter += 1;
-                output.add(new OutputHandler(tabCounter, tabHandler() + var, Keyword.VARIABLE));
-                tabCounter -= 1;
-            }
-        }*/
+        constructors.add(activeConstructor);
     }
+    
+    private void writeConstructorToFile(FileWriter fw) throws IOException{
+        tabCounter++;
+        String line = tabHandler() + className + "(self";
+        for(int i = 0; i < constructorVariables.size(); i++) {
+            line += ", " + constructorVariables.get(i) + "=None";
+        }
+        line += "):\n";
+        fw.write(line);
+        
+        tabCounter++;
+        for(int i = 0; i < variables.size(); i++) {
+            fw.write(tabHandler() + variables.get(i));
+        }
+        fw.write("\n");
+        
+        for(ConstructorHandler c: constructors) {
+            line = tabHandler() + "if(";
+            for(int i = 0; i < constructorVariables.size(); i++) {
+                String var = constructorVariables.get(i);
+                if(c.contains(var)) {
+                    if(i < constructorVariables.size()-1)
+                        line += "(" + var + " is not None and isinstance(" + var + ", " + c.getType(var) + ") and ";
+                    else
+                        line += var + " is not None):\n";
+                } else {
+                    if(i < constructorVariables.size()-1)
+                        line += var + " is None and ";
+                    else
+                        line += var + " is None):\n";
+                }
+            }
+            fw.write(line);
+            
+            tabCounter++;
+            for(OutputHandler out : c.outputs) {
+                fw.write(out.output);
+            }
+            tabCounter--;
+        }
+        tabCounter-=2;
+    }
+    
+    
+    
+    
+    
     
     private void createSystemCall() {
         /* System methods
@@ -227,11 +253,13 @@ public class KeywordHandler {
                 //tokens[2] is println("Hello World!");, use substring method to isolate println
                 //2nd argument of substring is actually 1 more than the string will return
                 // Should the way it prints depend on what version of python?
-                System.out.println("Print new line found");
+                if(DEBUG)
+                    System.out.println("Print new line found");
+                    
                 String printedString = "\'" + activeLine.substring(activeLine.indexOf("\"")+1, activeLine.lastIndexOf("\"")) + "\'";
                 //String printedString = tokens[2].substring(8, ( tokens[2].length() - 2 ) ); //this should isolate string being printed.  8 is the index of the first character AFTER the first quotation the 2nd argument should be index of the 
                                                                                             //second quotation, but the 2nd quotation will not be included in the returned string  
-                output.add(new OutputHandler(tabCounter, tabHandler() + "print " + printedString + " \n", Keyword.STRING));
+                add(new OutputHandler(tabCounter, tabHandler() + "print " + printedString + " \n", Keyword.STRING));
             }
             //eventually add the other print calls: printf, print
         }
@@ -269,13 +297,13 @@ public class KeywordHandler {
             else
                 variableText = variableText.concat(" = 0\n");
                 
-            output.add(new OutputHandler(tabCounter, tabHandler() + variableText, Keyword.VARIABLE));
+            add(new OutputHandler(tabCounter, tabHandler() + variableText, Keyword.VARIABLE));
         }
     }
     
     private void writeComment() {
         activeLine = interpreter.activeLine.replaceAll("//","");
-        output.add(new OutputHandler(tabCounter, tabHandler() + "#" + activeLine + "\n", Keyword.LINECOMMENT));
+        add(new OutputHandler(tabCounter, tabHandler() + "#" + activeLine + "\n", Keyword.LINECOMMENT));
     }
 
     //contain tab escapes in a single string, call this every time we write to the file
@@ -290,6 +318,8 @@ public class KeywordHandler {
     
     
     public void writeFile() {
+        inConstructor = false;
+        
         activeFile = new File("python/" + className + ".py");
         
         if(activeFile.exists()) 
@@ -298,6 +328,11 @@ public class KeywordHandler {
         try {
             activeFile.createNewFile();
             FileWriter fw = new FileWriter(activeFile);
+            
+            fw.write("class " + className + "():\n");
+            
+            writeConstructorToFile(fw);
+            
             for(OutputHandler out : output)
                 fw.write(out.output);
             fw.close();
@@ -319,10 +354,35 @@ public class KeywordHandler {
     }
     
     private class ConstructorHandler {
-        public ArrayList<String> activeVariables;
+        public ArrayList<Variable> activeVariables;
+        public ArrayList<OutputHandler> outputs;
         
         public ConstructorHandler() {
-            activeVariables = new ArrayList<String>();
+            activeVariables = new ArrayList<Variable>();
+            outputs = new ArrayList<OutputHandler>();
+        }
+        
+        public boolean contains(String var) {
+            for(Variable v : activeVariables)
+                if(v.var.equals(var))
+                    return true;
+            return false;
+        }
+        
+        public String getType(String var) {
+            for(Variable v : activeVariables)
+                if(v.var.equals(var))
+                    return v.type;
+            return "";
+        }
+    }
+    
+    private class Variable {
+        public String var, type;
+        
+        public Variable(String var, String type) {
+            this.var = var;
+            this.type = type;
         }
     }
 }
