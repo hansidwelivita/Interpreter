@@ -43,7 +43,7 @@ public class KeywordHandler {
                 //
                 break;
             case RETURN:
-                //
+                writeReturn();
                 break;                
             case SYSTEM:
                 System.out.println("Found keyword: System");
@@ -59,9 +59,13 @@ public class KeywordHandler {
                 System.out.println("Public Function");
                 writeFunction();
                 break;
+                
             case NOTFOUND:
                 if(checkForConstructor()) {
                     createConstructor();
+                    return true;
+                } else if(arithmeticCheck()){ // check for arithmetic signs or assignment statements 
+                    writeArithmetic();
                     return true;
                 } else {
                     System.out.println("No keyword found.");
@@ -94,35 +98,38 @@ public class KeywordHandler {
     }
     
     private void writeFunction() {
-        //need to be able to recognize function params
         String funcName;
-        String allParams = "";
+        String allNames = "";
         activeLine = interpreter.activeLine;
         String firstParams = activeLine.substring(activeLine.indexOf("(")+1 , activeLine.lastIndexOf(")")); //get inside of parenthesis
         String[] secondParams = firstParams.split("[ (,]+");
         String[] variableNames = new String[secondParams.length/2];
         int variableCounter = 0;
-        if(firstParams.equals("")) {
-            System.out.println("Empty");
+        if(firstParams.equals("")) { //check for function that doesn't accept arguments
+            System.out.println("No Parameters");
             String[] tokens = activeLine.split("[ {]");
             output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + ":\n", Keyword.FUNCTION));
         }
         else {
-            for(int i = 1; i < secondParams.length; i+=2) {
+            for(int i = 1; i < secondParams.length; i+=2) { //isolate variable names
                 variableNames[variableCounter] = secondParams[i]; 
                 variableCounter++;
-            
             }
             for(int i = 0; i < variableNames.length; i++) {
-                if(i == variableNames.length)
-                    allParams = allParams + variableNames[i];
+                if(i == (variableNames.length)-1 )
+                    allNames = allNames + variableNames[i];
                 else
-                    allParams = allParams + variableNames[i] + ",";
+                    allNames = allNames + variableNames[i] + ",";
             }
             String[] tokens = activeLine.split("[ (]");
            
-            output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + "(" + allParams + " ):\n" , Keyword.FUNCTION));
+            output.add(new OutputHandler(tabCounter, tabHandler() + "def " + tokens[2] + "(" + allNames + "):\n" , Keyword.FUNCTION));
         }
+    }
+    
+    private void writeReturn() {
+        activeLine = interpreter.activeLine.substring(0, interpreter.activeLine.indexOf(";"));
+        output.add(new OutputHandler(tabCounter, tabHandler() + activeLine, Keyword.RETURN));
     }
     
     private void createConstructor() {
@@ -196,13 +203,37 @@ public class KeywordHandler {
         }
     }
     
+    private boolean arithmeticCheck() {
+        activeLine = interpreter.activeLine;
+        if(activeLine.contains("+") || activeLine.contains("-") || activeLine.contains("*") || activeLine.contains("/") || activeLine.contains("=") )
+            return true;
+        else
+            return false;
+    }
+    
+    private void writeArithmetic() {
+        activeLine = interpreter.activeLine.replace(";","");
+        String variableString;
+        //check if increment/decrement by 1, if not: write the whole line to the file
+        if(activeLine.contains("++") || activeLine.contains("--")) {
+            if(activeLine.contains("++"))
+                variableString = activeLine.replace("++","") + " += 1";
+            else
+                variable String = activeLine.replace("--","") + " -= 1";
+            output.add(new OutputHandler(tabCounter, tabHandler() + variableString + "\n", Keyword.ARITHMETIC));
+        }
+        else 
+            output.add(new OutputHandler(tabCounter, tabHandler() + activeLine + "\n", Keyword.ARITHMETIC));
+            
+    }
+    
     private void writeComment() {
         activeLine = interpreter.activeLine.replaceAll("//","");
         output.add(new OutputHandler(tabCounter, tabHandler() + "#" + activeLine + "\n", Keyword.LINECOMMENT));
     }
 
     //contain tab escapes in a single string, call this every time we write to the file
-    //this should work for decrementing tabs as well as long as we correctly keep track of tabCount in the functions
+    //this should work for decrementing tabs as well as long as we correctly keep track of tabCounter in the functions
     private String tabHandler() {
         String tabString = "";
         for(int i = 0; i < tabCounter; i++) {
