@@ -32,6 +32,11 @@ public class KeywordHandler {
     
     private boolean hasConstructor = false;
     private ArrayList<String> constructorVariables;
+	
+	/*
+	 * java.lang.Object calls?
+	 */
+	private SystemHandler system;
     
     
     /*
@@ -46,6 +51,8 @@ public class KeywordHandler {
         
         variables = new ArrayList<String>();   
         constructorVariables = new ArrayList<String>();
+		
+		system = new SystemHandler();
     }
     
     public boolean handle(String keyword) {
@@ -67,6 +74,7 @@ public class KeywordHandler {
                 break;                
             case SYSTEM:
                 System.out.println("Found keyword: System");
+				system.handleCall(interpreter.activeLine);
                 createSystemCall();
                 break;
             case LINECOMMENT:
