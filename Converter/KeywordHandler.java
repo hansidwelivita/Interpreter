@@ -219,7 +219,7 @@ public class KeywordHandler {
             if(activeLine.contains("++"))
                 variableString = activeLine.replace("++","") + " += 1";
             else
-                variable String = activeLine.replace("--","") + " -= 1";
+                variableString = activeLine.replace("--","") + " -= 1";
             output.add(new OutputHandler(tabCounter, tabHandler() + variableString + "\n", Keyword.ARITHMETIC));
         }
         else 
