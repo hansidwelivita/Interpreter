@@ -1,11 +1,8 @@
-javac Interpreter.java Keyword.java KeywordHandler.java HelloWorld.java SystemHandler.java
+javac Interpreter.java Keyword.java KeywordHandler.java HelloWorld.java 
+javac SystemHandler.java PrintStreamHandler.java ObjectHandler.java
 java Interpreter
 
-del KeywordHandler$1.class
-del KeywordHandler$ConstructorHandler.class
-del KeywordHandler$OutputHandler.class
-del KeywordHandler$Variable.class
-
+del KeywordHandler$1.class KeywordHandler$ConstructorHandler.class KeywordHandler$OutputHandler.class KeywordHandler$Variable.class
 del Interpreter.class Keyword.class KeywordHandler.class HelloWorld.class SystemHandler.class
 
 cd python

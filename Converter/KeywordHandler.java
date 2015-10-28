@@ -36,7 +36,8 @@ public class KeywordHandler {
 	/*
 	 * java.lang.Object calls?
 	 */
-	private SystemHandler system;
+	public SystemHandler system;
+	public PrintStreamHandler printStream;
     
     
     /*
@@ -52,7 +53,8 @@ public class KeywordHandler {
         variables = new ArrayList<String>();   
         constructorVariables = new ArrayList<String>();
 		
-		system = new SystemHandler();
+		system = new SystemHandler(this);
+		printStream = new PrintStreamHandler(this);
     }
     
     public boolean handle(String keyword) {
