@@ -1,4 +1,5 @@
 # http://git-scm.com/docs/gitignore/
 
 *.ctxt
+*.class
 *.bluej
