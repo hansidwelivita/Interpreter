@@ -11,14 +11,30 @@ class HelloWorld {
         System.out.println("Constructor with input.");
     }
     
+    HelloWorld(int l, double d) {
+        System.out.println("Second constructor with same input type");
+    }
+    
+    HelloWorld(String test, double d) {
+        System.out.println("Constructor with two inputs and variables.");
+        int instance_variable = 0;
+    }
+    
+    HelloWorld(int test, float d) {
+        System.out.println("Constructor with same name input different type.");
+        int instance_variable = 0;
+    }
+    
+	public void testPrintln() {
+		System.out.println("Testing" + "test )");
+	}
+	
     public void testFunction(int test, String testString) {
         System.out.println("Testing");
         //function test
     }
     
-    public String testReturnFunction(){
-        String returnString = "";
-        return returnString;
+    public void testIndexFunction(){
     }
     
     int z = 3;
