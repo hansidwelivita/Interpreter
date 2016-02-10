@@ -1,8 +1,5 @@
 # http://git-scm.com/docs/gitignore/
 
 *.ctxt
-<<<<<<< HEAD
-=======
 *.class
->>>>>>> 609ea0b8c056ef5659f1f6a6b966ceacaa10b598
 *.bluej
