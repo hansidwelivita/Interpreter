@@ -28,7 +28,8 @@ public class Interpreter {
             Scanner fileReader = new Scanner(file);
             
             while(fileReader.hasNext()) {
-                fileInput.add(fileReader.nextLine());
+				keywordHandler.handle(fileReader.nextLine().trim());
+                //fileInput.add(fileReader.nextLine());
             }
             
             interpret();
@@ -39,7 +40,7 @@ public class Interpreter {
     }
     
     public void interpret() {
-        for(int i = 0; i < fileInput.size(); i++) {
+        /*for(int i = 0; i < fileInput.size(); i++) {
             activeLine = fileInput.get(i).trim();
             System.out.println("Reading in line: " + activeLine + " at tab " + keywordHandler.tabCounter);
             String[] tokens = activeLine.split(" ");
@@ -60,6 +61,6 @@ public class Interpreter {
                 keywordHandler.tabCounter -= 1;
         }
         
-        keywordHandler.writeFile();
+        keywordHandler.writeFile();*/
     }
 }

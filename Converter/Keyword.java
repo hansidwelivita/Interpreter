@@ -1,6 +1,7 @@
 public enum Keyword {
     CLASS("class"),
     CONSTRUCTOR("CONSTRUCTOR"), // DO NOT CHECK THIS
+	EXTENDS("extends"),
     VARIABLE("VARIABLE"), // DO NOT CHECK THIS
     FUNCTION("FUNCTION"), // DO NOT CHECK THIS
     INTEGER("int"),
@@ -9,8 +10,10 @@ public enum Keyword {
     RETURN("return"),
     SYSTEM("System"),
     LINECOMMENT("//"),
-    PUBLICFUNCTION("public"),
-    PRIVATEFUNCTION("private"),
+    PUBLIC("public"),
+    PRIVATE("private"),
+	PROTECTED("protected"),
+	ABSTRACT("abstract"),
     ARITHMETIC("arithmetic"),
     //try, catch, public, private, for, while, if, else, switch, do
     NOTFOUND("");
@@ -28,7 +31,7 @@ public enum Keyword {
     public static Keyword fromString(String str) {
         if(str != null) {
             for(Keyword k: Keyword.values()) {
-                if(str.equalsIgnoreCase(k.str)) {
+                if(str.equals(k.str)) {
                    return k; 
                 }
             }

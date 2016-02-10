@@ -14,6 +14,8 @@ public class KeywordHandler {
     private String activeLine, className;
     
     private ArrayList<OutputHandler> output;
+	
+	private ClassCreationHandler currentClass;
     
     
     /*
@@ -57,8 +59,57 @@ public class KeywordHandler {
 		printStream = new PrintStreamHandler(this);
     }
     
-    public boolean handle(String keyword) {
-        switch(Keyword.fromString(keyword)) {
+    public void handle(String input) {
+		String[] tokens = input.split(" ");
+		AccessType type = AccessType.DEFAULT;
+		int count = 0;
+		while(true) {
+			if(tokens.length == 1) {
+				System.out.println("break");
+				break;
+			}
+			
+			switch(Keyword.fromString(tokens[0])) {
+				case ABSTRACT:
+					type = AccessType.ABSTRACT;
+					break;
+				case CLASS:
+					String className = "none";
+					/* Handle class names */
+					if(!tokens[1].contains("{")) className = tokens[1];
+					else {
+						className = input.substring(0, input.indexOf("{"));
+						input = input.replaceFirst(className, "").trim();
+					}
+					currentClass = createClass(type, className);
+					break;
+				case EXTENDS:
+					String extendsName = "none";
+					if(!tokens[1].contains("{")) extendsName = tokens[1];
+					else {
+						extendsName = input.substring(0, input.indexOf("{"));
+						input = input.replaceFirst(extendsName, "").trim();
+					}
+					currentClass.addExtends(extendsName);
+					break;
+				case PRIVATE:
+					type = AccessType.PRIVATE;
+					break;
+				case PROTECTED:
+					type = AccessType.PROTECTED;
+					break;
+				case PUBLIC:
+					type = AccessType.PUBLIC;
+					break;
+				case NOTFOUND:
+					break;
+			}
+			
+			input = input.replaceFirst(tokens[0], "").trim();
+			tokens = input.split(" ");
+		}
+		
+        /*switch(Keyword.fromString(keyword)) {
             case CLASS:
                 System.out.println("Found keyword: class");
                 createClass();
@@ -101,9 +152,14 @@ public class KeywordHandler {
                     System.out.println("No keyword found.");
                 }
                 return false;
-        }
-        return true;
+        }*/
+        //return true;
     }
+	
+	private ClassCreationHandler createClass(AccessType type, String name) {
+		System.out.println("Create class of type " + type.getStr() + " with name " + name);
+		return new ClassCreationHandler(type, name);
+	}
     
     private void add(OutputHandler oneHandle) {
         if(inConstructor) {
